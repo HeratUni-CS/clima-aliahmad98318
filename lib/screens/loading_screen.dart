@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:clima/services/location.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -20,6 +23,20 @@ class _LoadingScreenState extends State<LoadingScreen> {
   LocationPermission? permission;
   void getData() async{
    http.Response response=await http.get(Uri.parse("https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=23a7ac21679d175a2e04fdc21a96b3c4"));
+   if(response.statusCode==200){
+     String data=response.body;
+
+     var decodedData=jsonDecode(data);
+     var id=decodedData['weather'][0]['id'];
+     var temperature=decodedData['main']['temp'];
+     var cityName=decodedData['name'];
+     print(id);
+     print(temperature);
+     print(cityName);
+
+   }else{
+     print(response.statusCode);
+   }
   }
   void getpermission() async{
   permission=await geolocatorPlatform.checkPermission();
