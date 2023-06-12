@@ -1,5 +1,7 @@
+import 'package:clima/services/location.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -7,8 +9,18 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  @override
+  void initState() {
+        super.initState();
+  // getlocation();
+  getpermission();
+  }
+
   GeolocatorPlatform geolocatorPlatform=GeolocatorPlatform.instance;
   LocationPermission? permission;
+  void getData() async{
+   http.Response response=await http.get(Uri.parse("https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=23a7ac21679d175a2e04fdc21a96b3c4"));
+  }
   void getpermission() async{
   permission=await geolocatorPlatform.checkPermission();
   if(permission==LocationPermission.denied){
@@ -31,13 +43,15 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void getlocation() async{
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-    print(position);
-
+  Location location=Location();
+  await location.getCurrentLocation();
+  print(location.latitude);
+  print(location.lognitude);
 
   }
   @override
   Widget build(BuildContext context) {
+    getData();
     return Scaffold(
       body: Center(
         child: TextButton(
