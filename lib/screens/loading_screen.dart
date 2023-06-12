@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clima/component/loadingWadget.dart';
 import 'package:clima/services/location.dart';
 import 'package:clima/services/networking.dart';
 import 'package:clima/utilities/constants.dart';
@@ -13,8 +14,9 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  var latitude;
-  var longittude;
+  bool isDataloaded=false;
+  double? latitude;
+  double? longittude;
   @override
   void initState() {
         super.initState();
@@ -34,6 +36,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
   longittude =location.lognitude;
   NetworkHelper networkHelper=NetworkHelper("https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longittude&appid=$apiKey");
   var weatherData=await networkHelper.getData();
+  setState(() {
+    isDataloaded=true;
+  });
+
   }
   void getpermission() async{
     permission=await geolocatorPlatform.checkPermission();
@@ -59,18 +65,23 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      body: Center(
-        child: TextButton(
-          onPressed: () {
-            getpermission();
-            //Get the current location
-          },
-          child: Text('Get Location'),
-        ),
+if(!isDataloaded){
+  return loadingWadget();
+}else{
+  return Scaffold(
+    body: Center(
+      child: TextButton(
+        onPressed: () {
+          getpermission();
+          //Get the current location
+        },
+        child: Text('Get Location'),
       ),
-    );
+    ),
+  );
+
+}
+
   }
 }
 
